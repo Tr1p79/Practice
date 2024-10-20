@@ -1,0 +1,34 @@
+2024-03-15 08:30:12 [INFO] Aplikace spuštěna
+2024-03-15 08:30:15 [DEBUG] Načítání konfiguračního souboru
+2024-03-15 08:30:16 [INFO] Konfigurační soubor úspěšně načten
+2024-03-15 08:31:20 [WARNING] Nízká dostupná paměť
+2024-03-15 08:32:05 [ERROR] Nepodařilo se připojit k databázi
+2024-03-15 08:32:10 [INFO] Opakování připojení k databázi
+2024-03-15 08:32:15 [INFO] Úspěšné připojení k databázi
+2024-03-15 09:15:30 [DEBUG] Zpracování dávkové úlohy započato
+2024-03-15 09:16:45 [ERROR] Chyba při zpracování záznamu: neplatný formát data
+2024-03-15 09:16:50 [WARNING] Přeskočen neplatný záznam
+2024-03-15 09:45:22 [INFO] Dávková úloha dokončena
+2024-03-15 10:30:00 [DEBUG] Začátek zálohování dat
+2024-03-15 10:35:12 [ERROR] Nedostatek místa na disku pro zálohu
+2024-03-15 10:35:15 [WARNING] Záloha byla přerušena kvůli nedostatku místa
+2024-03-15 11:00:05 [INFO] Začátek údržby systému
+2024-03-15 11:15:30 [ERROR] Nepodařilo se restartovat službu XYZ
+2024-03-15 11:15:35 [INFO] Opakování restartu služby XYZ
+2024-03-15 11:15:40 [INFO] Služba XYZ úspěšně restartována
+2024-03-15 12:00:00 [DEBUG] Kontrola aktualizací
+2024-03-15 12:00:10 [INFO] Nalezeny nové aktualizace
+2024-03-15 12:15:20 [WARNING] Aktualizace vyžaduje restart systému
+2024-03-15 12:30:00 [INFO] Instalace aktualizací zahájena
+2024-03-15 12:45:15 [ERROR] Chyba při instalaci aktualizace: nedostatečná oprávnění
+2024-03-15 12:45:20 [ERROR] Instalace aktualizací selhala
+2024-03-15 13:00:00 [INFO] Systém pokračuje v běžném provozu
+2024-03-15 14:30:00 [WARNING] Vysoké zatížení CPU
+2024-03-15 14:35:10 [ERROR] Služba ABC nereaguje
+2024-03-15 14:35:15 [INFO] Pokus o restartování služby ABC
+2024-03-15 14:35:20 [ERROR] Nepodařilo se restartovat službu ABC
+2024-03-15 15:00:00 [INFO] Ruční restart služby ABC administrátorem
+2024-03-15 15:00:10 [INFO] Služba ABC úspěšně obnovena
+2024-03-15 16:00:00 [DEBUG] Začátek denní údržby
+2024-03-15 16:30:00 [INFO] Denní údržba úspěšně dokončena
+2024-03-15 23:59:59 [INFO] Konec denního logu
