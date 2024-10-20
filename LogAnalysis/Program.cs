@@ -5,7 +5,8 @@ class Program
 {
     static void Main(string[] args)
     {
-        while (true) { 
+        while (true)
+        {
             Console.Write("Zadejte cestu k souboru s logy (nebo 'exit' pro ukončení): ");
             string filePath = Console.ReadLine();
 
@@ -14,15 +15,20 @@ class Program
                 break;
             }
 
-            if (!File.Exists(filePath)) 
+            if (!File.Exists(filePath))
             {
-                Console.WriteLine("Soubor neexistuje.");
+                Console.WriteLine("Soubor neexistuje. Zkuste to prosím znovu.");
                 continue;
             }
 
             try
             {
-                List<LogEntry> logs = new List<LogEntry>();
+                List<LogEntry> logs = ReadLogs(filePath);
+                if (logs.Count == 0)
+                {
+                    Console.WriteLine("Soubor neobsahuje žádné platné záznamy logů.");
+                    continue;
+                }
                 AnalyzeLogs(logs);
             }
             catch (Exception ex)
@@ -35,7 +41,7 @@ class Program
             Console.Clear();
         }
 
-        Console.WriteLine(" ");
+        Console.WriteLine("Děkujeme za použití analyzátoru logů. Na shledanou!");
     }
 
     static List<LogEntry> ReadLogs(string filePath)
