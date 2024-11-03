@@ -3,72 +3,48 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Globalization;
-using System.Security;
 
-namespace Pozemky
+namespace LandManagementSystem
 {
-    internal class Program
+    public class LandRecord
     {
-        static void Main(string[] args)
+        public string Id { get; set; }
+        public decimal Area { get; set; }
+        public decimal Share { get; set; }
+    }
+
+    public class Transaction
+    {
+        public DateTime Date { get; set; }
+        public string Type { get; set; } // "Nakup" nebo "Prodej"
+        public List<LandRecord> Records { get; set; }
+
+        public Transaction()
         {
-            try
-            {
-                var transactions = ParseFile("C:\\02_ReposCore\\09_Practice\\Practice\\Pozemky\\test.txt");
-                
-                while (true) 
-                {
-                    Console.WriteLine("\nZadejte datum pro zobrazení transakcí (ve formátu DD.MM.YYYY):");
-                    var input = Console.ReadLine();
-
-                    if (string.IsNullOrEmpty(input)) break;
-
-                    if(DateTime.TryParseExact(input, "dd.MM.yyyy", CultureInfo.InvariantCulture,
-                        DateTimeStyles.None, out DateTime searchDate)) 
-                    { 
-                        var foundTransactions = transactions
-                                                .Where(t => t.Date.Date == searchDate.Date)
-                                                .ToList();
-
-                        if (foundTransactions.Any()) 
-                        { 
-                            foreach (var transaction in foundTransactions)
-                            {
-                                DisplayTransactionDetails(transaction);
-                            }
-                        }
-                        else
-                        {
-                            Console.WriteLine("Pro zadané datum nebyly nalezeny žádné transakce.");
-                        }
-                    }
-                    else
-                    {
-                        Console.WriteLine("Neplatný formát data. Použijte formát DD.MM.YYYY");
-                    }
-                }
-            }
-            catch (Exception e) 
-            {
-                Console.WriteLine($"Došlo k chybě: {e.Message}");
-            }
-
+            Records = new List<LandRecord>();
         }
+    }
 
+    public class Program
+    {
         static List<Transaction> ParseFile(string filePath)
         {
             var transactions = new List<Transaction>();
             var lines = File.ReadAllLines(filePath);
-
             Transaction currentTransaction = null;
 
             foreach (var line in lines)
             {
+                Console.WriteLine($"Zpracovávám řádek: '{line}'"); // Debug výpis
+
                 if (string.IsNullOrWhiteSpace(line)) continue;
 
-                // Detekce hlavičky transakce (obsahuje tabulátor)
-                if (line.Contains('\t'))
+                // Kontrola, zda řádek začíná "Nakup" nebo "Prodej"
+                if (line.StartsWith("Nakup") || line.StartsWith("Prodej"))
                 {
                     var parts = line.Split('\t');
+                    Console.WriteLine($"Našel jsem hlavičku transakce: {line}"); // Debug výpis
+
                     currentTransaction = new Transaction
                     {
                         Type = parts[0],
@@ -76,20 +52,39 @@ namespace Pozemky
                     };
                     transactions.Add(currentTransaction);
                 }
-                // Zpracování záznamu o pozemku
                 else if (currentTransaction != null)
                 {
-                    var recordParts = line.Trim().Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+                    // Zpracování záznamu pozemku
+                    var recordParts = line.Split(new[] { '\t'  }, StringSplitOptions.RemoveEmptyEntries);
+                    Console.WriteLine($"Parsování záznamu pozemku: {line}"); // Debug výpis
+                    Console.WriteLine($"Počet částí: {recordParts.Length}"); // Debug výpis
+
                     if (recordParts.Length == 3)
                     {
-                        currentTransaction.Records.Add(new LandRecord
+                        try
                         {
-                            Id = recordParts[0],
-                            Area = decimal.Parse(recordParts[1], CultureInfo.InvariantCulture),
-                            Share = decimal.Parse(recordParts[2], CultureInfo.InvariantCulture)
-                        });
+                            var record = new LandRecord
+                            {
+                                Id = recordParts[0],
+                                Area = decimal.Parse(recordParts[1], CultureInfo.InvariantCulture),
+                                Share = decimal.Parse(recordParts[2], CultureInfo.InvariantCulture)
+                            };
+                            currentTransaction.Records.Add(record);
+                            Console.WriteLine($"Úspěšně přidán záznam: ID={record.Id}, Area={record.Area}, Share={record.Share}"); // Debug výpis
+                        }
+                        catch (Exception ex)
+                        {
+                            Console.WriteLine($"Chyba při parsování záznamu: {line}");
+                            Console.WriteLine($"Detaily chyby: {ex.Message}");
+                        }
                     }
                 }
+            }
+
+            // Debug výpis pro kontrolu načtených dat
+            foreach (var trans in transactions)
+            {
+                Console.WriteLine($"Transakce {trans.Type} z {trans.Date:yyyy-MM-dd} má {trans.Records.Count} záznamů");
             }
 
             return transactions;
@@ -112,27 +107,52 @@ namespace Pozemky
             Console.WriteLine($"Celková výměra: {transaction.Records.Sum(r => r.Area * r.Share):F2} m²");
             Console.WriteLine($"Počet pozemků: {transaction.Records.Count}");
         }
-    }
 
-    public class Transaction
-    {
-        public DateTime Date { get; set; }
-        public string Type { get; set; } //Nakup,Prodej
-
-        public List<LandRecord> Records { get; set; }
-
-        public Transaction() 
+        static void Main(string[] args)
         {
-            Records = new List<LandRecord>();
+            try
+            {
+                Console.WriteLine("Začínám načítat soubor...");
+                var transactions = ParseFile("C:\\02_ReposCore\\09_Practice\\Practice\\Pozemky\\test.txt");
+                Console.WriteLine($"Načteno {transactions.Count} transakcí.");
+
+                while (true)
+                {
+                    Console.WriteLine("\nZadejte datum pro zobrazení transakcí (ve formátu DD.MM.YYYY):");
+                    var input = Console.ReadLine();
+
+                    if (string.IsNullOrWhiteSpace(input)) break;
+
+                    if (DateTime.TryParseExact(input, "dd.MM.yyyy", CultureInfo.InvariantCulture,
+                        DateTimeStyles.None, out DateTime searchDate))
+                    {
+                        var foundTransactions = transactions
+                            .Where(t => t.Date.Date == searchDate.Date)
+                            .ToList();
+
+                        if (foundTransactions.Any())
+                        {
+                            foreach (var transaction in foundTransactions)
+                            {
+                                DisplayTransactionDetails(transaction);
+                            }
+                        }
+                        else
+                        {
+                            Console.WriteLine("Pro zadané datum nebyly nalezeny žádné transakce.");
+                        }
+                    }
+                    else
+                    {
+                        Console.WriteLine("Neplatný formát data. Použijte formát DD.MM.YYYY");
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Došlo k chybě: {ex.Message}");
+                Console.WriteLine($"Stack trace: {ex.StackTrace}");
+            }
         }
     }
-
-    public class LandRecord
-    {
-        public string Id { get; set; }
-        public decimal Area {  get; set; }
-        public decimal Share { get; set; }
-
-    }
-
 }
